@@ -1,0 +1,19 @@
+{
+  "name": "skill-versioning",
+  "description": "Automatic version control for Claude Code Skills with semantic versioning, auto-backup, and changelog generation",
+  "version": "1.0.0",
+  "author": {
+    "name": "cathy-kim"
+  },
+  "homepage": "https://github.com/cathy-kim/skill-versioning-plugin",
+  "repository": "https://github.com/cathy-kim/skill-versioning-plugin",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "skill",
+    "versioning",
+    "backup",
+    "changelog",
+    "semantic-versioning"
+  ]
+}
