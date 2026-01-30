@@ -138,9 +138,13 @@ async function processHook(input: PostToolUseInput): Promise<HookResult> {
 
     log(`[skill-version-hook] Created backup: ${backupFilename}`);
 
+    // 10. Update CHANGELOG.md
+    const changelogPath = path.join(path.dirname(filePath), "CHANGELOG.md");
+    updateChangelog(changelogPath, skillName, version, today);
+
     return {
       continue: true,
-      message: `[skill-version-hook] Backed up ${skillName}/SKILL.md to releases/${backupFilename}`,
+      message: `[skill-version-hook] Backed up ${skillName}/SKILL.md to releases/${backupFilename} and updated CHANGELOG.md`,
     };
   } catch (error: any) {
     log(`[skill-version-hook] Failed to create backup: ${error.message}`);
@@ -229,6 +233,68 @@ function extractVersion(filePath: string): string | null {
     return null;
   } catch {
     return null;
+  }
+}
+
+/**
+ * Update or create CHANGELOG.md with new version entry
+ */
+function updateChangelog(
+  changelogPath: string,
+  skillName: string,
+  version: string,
+  date: string
+): void {
+  try {
+    const header = `# Changelog - ${skillName}
+
+All notable changes to this skill will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+`;
+
+    const newEntry = `## [${version}] - ${date}
+
+### Changed
+- Version ${version} snapshot created
+
+---
+
+`;
+
+    if (!fs.existsSync(changelogPath)) {
+      // Create new CHANGELOG.md
+      fs.writeFileSync(changelogPath, header + newEntry, "utf-8");
+      log(`[skill-version-hook] Created CHANGELOG.md for ${skillName}`);
+    } else {
+      // Check if version entry already exists
+      const content = fs.readFileSync(changelogPath, "utf-8");
+      if (content.includes(`## [${version}]`)) {
+        log(`[skill-version-hook] CHANGELOG entry for v${version} already exists`);
+        return;
+      }
+
+      // Insert new entry after the header (after first ---)
+      const insertIndex = content.indexOf("---\n");
+      if (insertIndex !== -1) {
+        const newContent =
+          content.slice(0, insertIndex + 4) +
+          "\n" +
+          newEntry +
+          content.slice(insertIndex + 4);
+        fs.writeFileSync(changelogPath, newContent, "utf-8");
+      } else {
+        // Fallback: append to end
+        fs.appendFileSync(changelogPath, "\n" + newEntry, "utf-8");
+      }
+      log(`[skill-version-hook] Updated CHANGELOG.md with v${version}`);
+    }
+  } catch (error: any) {
+    log(`[skill-version-hook] Failed to update CHANGELOG: ${error.message}`);
   }
 }
 
