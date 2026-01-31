@@ -1,4 +1,4 @@
-# Skill Versioning Plugin for Claude Code
+# Semantic Versioning for Skills 
 
 > Automatic version control for Claude Code Skills with semantic versioning, auto-backup, and changelog generation.
 
