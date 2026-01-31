@@ -1,11 +1,21 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "skill-semver-marketplace",
-  "description": "Marketplace for skill-semver plugin",
-  "version": "1.0.0",
+  "description": "Marketplace for skill-semver plugin - automatic version control for Claude Code Skills",
+  "owner": {
+    "name": "cathy-kim"
+  },
   "plugins": [
     {
       "name": "skill-semver",
-      "path": "."
+      "description": "Automatic version control for Claude Code Skills with semantic versioning, auto-backup, and changelog generation",
+      "version": "1.1.0",
+      "author": {
+        "name": "cathy-kim"
+      },
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/cathy-kim/skill-semver"
     }
   ]
 }
