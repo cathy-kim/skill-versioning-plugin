@@ -1,0 +1,11 @@
+{
+  "name": "skill-semver-marketplace",
+  "description": "Marketplace for skill-semver plugin",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "name": "skill-semver",
+      "path": "."
+    }
+  ]
+}
