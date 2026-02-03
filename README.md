@@ -1,39 +1,38 @@
-# Semantic Versioning for Skills 
+# Skill SemVer
 
 > Automatic version control for Claude Code Skills with semantic versioning, auto-backup, and changelog generation.
+
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/cathy-kim/skill-semver/releases)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ## Features
 
 - 🔄 **Auto-backup**: Automatically backs up SKILL.md on every edit
-- 📋 **Semantic Versioning**: MAJOR.MINOR.PATCH format
+- 📋 **Semantic Versioning**: MAJOR.MINOR.PATCH format with pre-release support
 - 📜 **Changelog**: Track changes with Keep a Changelog format
 - 🎯 **Zero config**: Works out of the box with PostToolUse hook
 - 📁 **Organized**: Clean releases/ folder for version history
+- 📅 **Auto-update**: Automatically updates "Last Updated" date
+- 🏷️ **Pre-release**: Support for alpha, beta, rc versions (e.g., `1.0.0-alpha`, `2.0.0-beta.1`)
 
 ## Quick Start
 
 ### 1. Install the plugin
 
 ```bash
-# Add the marketplace
-claude plugin marketplace add cathy-kim/skill-versioning-plugin
-
-# Install the plugin
-claude plugin install skill-versioning@cathy-kim/skill-versioning-plugin
+# Using Claude Code CLI
+claude mcp add-json skill-semver '{"type":"stdio","command":"npx","args":["-y","skill-semver"]}'
 ```
 
-### 2. Or test locally
+### 2. Or clone locally
 
 ```bash
 # Clone this repo
-git clone https://github.com/cathy-kim/skill-versioning-plugin.git
+git clone https://github.com/cathy-kim/skill-semver.git
 
 # Install dependencies
-cd skill-versioning-plugin
+cd skill-semver
 npm install
-
-# Test with Claude Code
-claude --plugin-dir ./skill-versioning-plugin
 ```
 
 ### 3. Add version header to your SKILL.md
@@ -54,7 +53,7 @@ The hook will create `releases/v1.0.0_2026-01-30_SKILL.md` automatically.
 ## Plugin Structure
 
 ```
-skill-versioning-plugin/
+skill-semver/
 ├── .claude-plugin/
 │   └── plugin.json           # Plugin metadata
 ├── skills/
@@ -68,6 +67,8 @@ skill-versioning-plugin/
 ├── examples/
 │   └── example-skill/        # Example skill structure
 ├── package.json
+├── CHANGELOG.md
+├── RESEARCH-SUMMARY.md
 └── README.md
 ```
 
@@ -81,11 +82,23 @@ After using this plugin, your skills will have this structure:
 ├── CHANGELOG.md      # Change history
 └── releases/         # Version snapshots
     ├── v1.0.0_2025-12-01_SKILL.md
-    ├── v2.0.0_2025-12-15_SKILL.md
+    ├── v2.0.0-beta.1_2025-12-15_SKILL.md
     └── v3.0.0_2026-01-15_SKILL.md
 ```
 
-## Version Bump Guide
+## Version Formats
+
+### Supported Versions
+
+| Format | Example | Description |
+|--------|---------|-------------|
+| Standard | `1.2.3` | MAJOR.MINOR.PATCH |
+| Pre-release | `1.0.0-alpha` | Alpha version |
+| Pre-release with number | `2.0.0-beta.1` | Beta version 1 |
+| Release candidate | `3.0.0-rc.1` | Release candidate |
+| Build metadata | `1.0.0+build.123` | With build info |
+
+### Version Bump Guide
 
 | Change Type | Version | Example |
 |-------------|---------|---------|
@@ -93,16 +106,37 @@ After using this plugin, your skills will have this structure:
 | New feature | MINOR | Add new agent |
 | Bug fix | PATCH | Fix typo |
 
+### Initial Development (0.x.x)
+
+Versions starting with `0.` are marked as "Initial Development" and indicate the skill is not yet stable.
+
+## How It Works
+
+1. **PostToolUse Hook** detects when you edit a SKILL.md file
+2. **Version Extraction** reads the `**Version**: X.X.X` header
+3. **Last Updated** automatically updates the date
+4. **Auto-backup** creates `releases/v{VERSION}_{DATE}_SKILL.md`
+5. **CHANGELOG** updates with new version entry
+6. **Skip duplicates** - won't create backup if same version exists
+
+## Version Header Formats
+
+The hook recognizes these version patterns:
+
+```markdown
+**Version**: 1.0.0           ✓ Preferred
+**Version**: 1.0.0-alpha     ✓ Pre-release
+Version: 1.0.0               ✓ Alternative
+# My Skill v1.0.0            ✓ In title
+```
+
 ## Migration
 
 For existing skills without versioning:
 
 ```bash
 # Run from your project root
-npx tsx node_modules/skill-versioning-plugin/scripts/migrate-skill-versioning.ts
-
-# Or if testing locally
-npx tsx ./scripts/migrate-skill-versioning.ts
+npx tsx scripts/migrate-skill-versioning.ts
 ```
 
 The migration script will:
@@ -110,22 +144,6 @@ The migration script will:
 - Add version headers to SKILL.md files
 - Generate CHANGELOG.md from git history
 - Migrate existing backup files
-
-## CLI Commands
-
-After installing the plugin:
-
-```bash
-# View versioning guide
-/skill-versioning:versioning-guide
-```
-
-## How It Works
-
-1. **PostToolUse Hook** detects when you edit a SKILL.md file
-2. **Version Extraction** reads the `**Version**: X.X.X` header
-3. **Auto-backup** creates `releases/v{VERSION}_{DATE}_SKILL.md`
-4. **Skip duplicates** - won't create backup if same version exists
 
 ## CHANGELOG Format
 
@@ -143,6 +161,14 @@ After installing the plugin:
 ### Fixed
 - Bug fix description
 ```
+
+## What's New in v1.1.0
+
+- **Pre-release Support**: Handle alpha, beta, rc versions
+- **Build Metadata**: Support `+build.123` suffixes
+- **Auto Last Updated**: Automatically update the date field
+- **Performance**: Reduced file reads from 2 to 1
+- **Cross-platform**: Fixed path separator issues (Windows/Mac)
 
 ## Requirements
 
